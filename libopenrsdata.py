@@ -75,6 +75,59 @@ class LibOpenRSData(object):
             return "libopenrsdata: Invalid prov_code provided"
 
     @staticmethod
+    def get_school_by_id(school_id):
+        """
+            Return the info for school with id of school_id.
+        """
+        tree = etree.parse(urllib.request.urlopen(
+            "http://www.bryanabsmith.com/openrsdata/get_school_data.php")).getroot()
+        for child in tree:
+            if int(child.attrib["id"]) == school_id:
+                temp_list = {}
+                temp_list["id"] = child.attrib["id"]
+                temp_list["name"] = child.attrib["name"]
+                temp_list["location"] = child.attrib["location"]
+                temp_list["juris"] = child.attrib["juris"]
+                temp_list["years"] = child.attrib["years"]
+                temp_list["lat"] = child.attrib["lat"]
+                temp_list["lng"] = child.attrib["lng"]
+                temp_list["yropen"] = child.attrib["yropen"]
+                temp_list["yrclosed"] = child.attrib["yrclosed"]
+                temp_list["notes"] = child.attrib["notes"]
+                temp_list["source"] = child.attrib["source"]
+                return temp_list
+
+    @staticmethod
+    def get_schools_by_year_range(lower, higher):
+        """
+            Get the school information for those open between lower and higher.
+        """
+        tree = etree.parse(urllib.request.urlopen(
+            "http://www.bryanabsmith.com/openrsdata/get_school_data.php")).getroot()
+
+        full_list = []
+
+        for child in tree:
+            low_year = int(child.attrib["yropen"])
+            high_year = int(child.attrib["yrclosed"])
+            if low_year >= lower and high_year <= higher:
+                temp_list = {}
+                temp_list["id"] = child.attrib["id"]
+                temp_list["name"] = child.attrib["name"]
+                temp_list["location"] = child.attrib["location"]
+                temp_list["juris"] = child.attrib["juris"]
+                temp_list["years"] = child.attrib["years"]
+                temp_list["lat"] = child.attrib["lat"]
+                temp_list["lng"] = child.attrib["lng"]
+                temp_list["yropen"] = child.attrib["yropen"]
+                temp_list["yrclosed"] = child.attrib["yrclosed"]
+                temp_list["notes"] = child.attrib["notes"]
+                temp_list["source"] = child.attrib["source"]
+                full_list.append(temp_list)
+
+        return full_list
+
+    @staticmethod
     def get_version():
         """
             Return the version of the library.
